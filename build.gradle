@@ -3,7 +3,7 @@ plugins {
 	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
 	id 'java'
 	id 'war'
-	id "org.siouan.frontend" version "3.0.2"
+	id "org.siouan.frontend-jdk8" version "5.0.0"
 }
 
 group = 'toy.cenibee'
@@ -25,6 +25,12 @@ dependencies {
 	providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+frontend {
+	nodeDistributionProvided = false
+	nodeVersion = '14.15.4'
+	nodeInstallDirectory = file("${projectDir}/node")
 }
 
 test {
