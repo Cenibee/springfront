@@ -31,8 +31,14 @@ frontend {
 	nodeDistributionProvided = false
 	nodeVersion = '14.15.4'
 	nodeInstallDirectory = file("${projectDir}/node")
+
+	assembleScript = 'run build'
 }
 
 test {
 	useJUnitPlatform()
+}
+
+processResources {
+	dependsOn assembleFrontend
 }

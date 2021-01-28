@@ -33,6 +33,9 @@ out/
 /nbdist/
 /.nb-gradle/
 
+### Built by siouan.frontend
+/src/main/resources/static/built/
+
 ### VS Code ###
 .vscode/
 /node/
