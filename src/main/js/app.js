@@ -3,8 +3,7 @@ const React = require('react');
 // DOM 과 React 서버 렌더러의 진입점 역할을 하는 패키지
 const ReactDOM = require('react-dom')
 
-// HAL, URI Templates 등을 지원하는 rest.js 에서 설정되는 커스텀 코드
-const client = require('./client')
+const axios = require('axios')
 
 // 리액트 컴포넌트로 사용할 App 컴포넌트에 대한 선언
 class App extends React.Component {
@@ -15,9 +14,10 @@ class App extends React.Component {
 
     // DOM 에 React 가 렌더링된 후 실행할 함수
     componentDidMount() {
-        client({method: 'GET', path: '/api/employees'}).then(response => {
-            this.setState({employees: response.entity._embedded.employees});
-        });
+        axios.get('/api/employees')
+            .then(response => {
+                this.setState({employees: response.data._embedded.employees});
+            });
     }
 
     // 화면에 컴포넌트를 그리도록하는 API - 프레임워크 레벨에서 콜된다.
