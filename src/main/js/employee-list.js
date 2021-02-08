@@ -28,7 +28,10 @@ export default class EmployeeList extends React.Component {
 
     render() {
         const employees = this.props.employees.map(employee =>
-            <Employee key={employee._links.self.href} employee={employee}/>
+            <Employee
+                key={employee._links.self.href}
+                employee={employee}
+                onDelete={this.props.onDelete}/>
         );
 
         const navLinks = [];
@@ -47,13 +50,13 @@ export default class EmployeeList extends React.Component {
 
         return (
             <div>
-                {/*<input ref={'pageSize'} defaultValue={this.props.pageSize} onInput={this.handleInput}/>*/}
                 <table>
                     <tbody>
                     <tr>
                         <th>First Name</th>
                         <th>Last Name</th>
                         <th>Description</th>
+                        <th>Delete</th>
                     </tr>
                     {employees}
                     </tbody>
@@ -67,12 +70,22 @@ export default class EmployeeList extends React.Component {
 }
 
 class Employee extends React.Component {
+    constructor(props) {
+        super(props);
+        this.handleDelete = this.handleDelete.bind(this);
+    }
+
+    handleDelete() {
+        this.props.onDelete(this.props.employee);
+    }
+
     render() {
         return (
             <tr>
                 <td>{this.props.employee.firstName}</td>
                 <td>{this.props.employee.lastName}</td>
                 <td>{this.props.employee.description}</td>
+                <td><button onClick={this.handleDelete}>Delete</button></td>
             </tr>
         )
     }

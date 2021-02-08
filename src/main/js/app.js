@@ -17,8 +17,9 @@ class App extends React.Component {
             pageSize: 2
         };
 
-        this.onCreate = this.onCreate.bind(this)
-        this.onNavigate = this.onNavigate.bind(this)
+        this.onCreate = this.onCreate.bind(this);
+        this.onNavigate = this.onNavigate.bind(this);
+        this.onDelete = this.onDelete.bind(this);
     }
 
     // 파트 1에서 만들었던 전체 정보를 가져오는 요청
@@ -68,6 +69,13 @@ class App extends React.Component {
             });
     }
 
+    onDelete(employee) {
+        axios.delete(employee._links.self.href)
+            .then(() => {
+                this.loadFromServer(this.state.pageSize);
+            });
+    }
+
     onNavigate(navUri) {
         axios.get(navUri)
             .then(employeeCollection => {
@@ -90,7 +98,8 @@ class App extends React.Component {
                 <EmployeeList
                     links={this.state.links}
                     employees={this.state.employees}
-                    onNavigate={this.onNavigate}/>
+                    onNavigate={this.onNavigate}
+                    onDelete={this.onDelete}/>
                 <CreateDialogue
                     attributes={this.state.attributes}
                     onCreate={this.onCreate}/>
