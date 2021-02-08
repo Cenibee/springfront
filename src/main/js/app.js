@@ -41,8 +41,14 @@ class App extends React.Component {
             headers:{'Accept': 'application/schema+json'}
         });
 
+        const employees = await Promise.all(employeeCollection.data._embedded.employees.map(employee =>
+            axios.get(employee._links.self.href).then(response =>
+                response.data
+            )
+        ));
+
         this.setState({
-            employees: employeeCollection.data._embedded.employees,
+            employees: employees,
             pageSize: pageSize,
             links: employeeCollection.data._links,
             attributes: Object.keys(schema.data.properties)
