@@ -12,21 +12,26 @@ import CreateDialogue from './create-dialogue'
 class App extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {employees: []};
+        this.state = {
+            employees: [],
+            pageSize: 2
+        };
+
         this.onCreate = this.onCreate.bind(this)
+        this.onNavigate = this.onNavigate.bind(this)
     }
 
     // 파트 1에서 만들었던 전체 정보를 가져오는 요청
-    loadFromServerAtOnce() {
-        axios.get('/api/employees')
-            .then(response => {
-                this.setState({employees: response.data._embedded.employees});
-            });
-    }
+    // loadFromServerAtOnce() {
+    //     axios.get('/api/employees')
+    //         .then(response => {
+    //             this.setState({employees: response.data._embedded.employees});
+    //         });
+    // }
 
     // Employees 관련 정보를 this.state 에 셋하는 요청
     loadFromServer(pageSize) {
-        axios.get('/api/employees')
+        axios.get('/api/employees', {params: {'size': 2}})
             .then(employeeCollection => {
                 this.setState({
                     employees: employeeCollection.data._embedded.employees,
@@ -47,8 +52,28 @@ class App extends React.Component {
     onCreate(newEmployee) {
         axios.get('/api/employees')
             .then(employeeCollection => {
-                axios.post(employeeCollection.data._links.self.href, newEmployee, {
+                return axios.post(employeeCollection.data._links.self.href, newEmployee, {
                     headers: {'Content-Type': 'application/json'}
+                })
+            }).then(() => {
+                axios.get('/api/employees', {
+                    params: {'size': this.state.pageSize}
+                }).then(response => {
+                    if(typeof response.data._links.last !== 'undefined') {
+                        this.onNavigate(response.data._links.last.href);
+                    } else {
+                        this.onNavigate(response.data._links.self.href);
+                    }
+                });
+            });
+    }
+
+    onNavigate(navUri) {
+        axios.get(navUri)
+            .then(employeeCollection => {
+                this.setState({
+                    employees: employeeCollection.data._embedded.employees,
+                    links: employeeCollection.data._links
                 });
             });
     }
@@ -62,7 +87,10 @@ class App extends React.Component {
     render () {
         return (
             <div>
-                <EmployeeList employees={this.state.employees}/>
+                <EmployeeList
+                    links={this.state.links}
+                    employees={this.state.employees}
+                    onNavigate={this.onNavigate}/>
                 <CreateDialogue
                     attributes={this.state.attributes}
                     onCreate={this.onCreate}/>
