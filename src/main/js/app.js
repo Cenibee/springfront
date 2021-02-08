@@ -20,6 +20,7 @@ class App extends React.Component {
         this.onCreate = this.onCreate.bind(this);
         this.onNavigate = this.onNavigate.bind(this);
         this.onDelete = this.onDelete.bind(this);
+        this.updatePageSize = this.updatePageSize.bind(this);
     }
 
     // 파트 1에서 만들었던 전체 정보를 가져오는 요청
@@ -32,7 +33,7 @@ class App extends React.Component {
 
     // Employees 관련 정보를 this.state 에 셋하는 요청
     loadFromServer(pageSize) {
-        axios.get('/api/employees', {params: {'size': 2}})
+        axios.get('/api/employees', {params: {'size': pageSize}})
             .then(employeeCollection => {
                 this.setState({
                     employees: employeeCollection.data._embedded.employees,
@@ -76,6 +77,12 @@ class App extends React.Component {
             });
     }
 
+    updatePageSize(pageSize) {
+        if(pageSize !== this.state.pageSize) {
+            this.loadFromServer(pageSize)
+        }
+    }
+
     onNavigate(navUri) {
         axios.get(navUri)
             .then(employeeCollection => {
@@ -99,7 +106,8 @@ class App extends React.Component {
                     links={this.state.links}
                     employees={this.state.employees}
                     onNavigate={this.onNavigate}
-                    onDelete={this.onDelete}/>
+                    onDelete={this.onDelete}
+                    updatePageSize={this.updatePageSize}/>
                 <CreateDialogue
                     attributes={this.state.attributes}
                     onCreate={this.onCreate}/>
