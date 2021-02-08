@@ -6,6 +6,7 @@ const ReactDOM = require('react-dom')
 const axios = require('axios')
 
 import EmployeeList from './employee-list'
+import CreateDialogue from './create-dialogue'
 
 // 리액트 컴포넌트로 사용할 App 컴포넌트에 대한 선언
 class App extends React.Component {
@@ -50,7 +51,10 @@ class App extends React.Component {
     // 화면에 컴포넌트를 그리도록하는 API - 프레임워크 레벨에서 콜된다.
     render () {
         return (
-            <EmployeeList employees={this.state.employees}/>
+            <div>
+                <EmployeeList employees={this.state.employees}/>
+                <CreateDialogue attributes={this.state.attributes}/>
+            </div>
         )
     }
 }
