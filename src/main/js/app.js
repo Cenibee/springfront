@@ -7,6 +7,7 @@ const axios = require('axios')
 
 import EmployeeList from './employee-list'
 import CreateDialogue from './create-dialogue'
+import 'regenerator-runtime/runtime'
 
 // 리액트 컴포넌트로 사용할 App 컴포넌트에 대한 선언
 class App extends React.Component {
@@ -31,50 +32,45 @@ class App extends React.Component {
     //         });
     // }
 
-    // Employees 관련 정보를 this.state 에 셋하는 요청
-    loadFromServer(pageSize) {
-        axios.get('/api/employees', {params: {'size': pageSize}})
-            .then(employeeCollection => {
-                this.setState({
-                    employees: employeeCollection.data._embedded.employees,
-                    pageSize: pageSize,
-                    links: employeeCollection.data._links
-                });
+    async loadFromServer(pageSize) {
+        const employeeCollection = await axios.get('/api/employees', {
+            params: {'size': pageSize}
+        });
 
-                axios.get(employeeCollection.data._links.profile.href, {
-                    headers: {'Accept': 'application/schema+json'}
-                }).then(schema => {
-                    this.setState({
-                        attributes: Object.keys(schema.data.properties)
-                    });
-                });
-            });
+        const schema = await axios.get(employeeCollection.data._links.profile.href, {
+            headers:{'Accept': 'application/schema+json'}
+        });
+
+        this.setState({
+            employees: employeeCollection.data._embedded.employees,
+            pageSize: pageSize,
+            links: employeeCollection.data._links,
+            attributes: Object.keys(schema.data.properties)
+        });
     }
 
-    onCreate(newEmployee) {
-        axios.get('/api/employees')
-            .then(employeeCollection => {
-                return axios.post(employeeCollection.data._links.self.href, newEmployee, {
-                    headers: {'Content-Type': 'application/json'}
-                })
-            }).then(() => {
-                axios.get('/api/employees', {
-                    params: {'size': this.state.pageSize}
-                }).then(response => {
-                    if(typeof response.data._links.last !== 'undefined') {
-                        this.onNavigate(response.data._links.last.href);
-                    } else {
-                        this.onNavigate(response.data._links.self.href);
-                    }
-                });
-            });
+    async onCreate(newEmployee) {
+        const employeeCollection = await axios.get('/api/employees');
+
+        await axios.post(employeeCollection.data._links.self.href, newEmployee, {
+            headers: {'Content-Type': 'application/json'}
+        });
+
+        axios.get('/api/employees', {
+            params: {'size': this.state.pageSize}
+        }).then(response => {
+            if(typeof response.data._links.last !== 'undefined') {
+                this.onNavigate(response.data._links.last.href);
+            } else {
+                this.onNavigate(response.data._links.self.href);
+            }
+        });
     }
 
     onDelete(employee) {
-        axios.delete(employee._links.self.href)
-            .then(() => {
-                this.loadFromServer(this.state.pageSize);
-            });
+        axios.delete(employee._links.self.href).then(() => {
+            this.loadFromServer(this.state.pageSize);
+        });
     }
 
     updatePageSize(pageSize) {
@@ -84,13 +80,12 @@ class App extends React.Component {
     }
 
     onNavigate(navUri) {
-        axios.get(navUri)
-            .then(employeeCollection => {
-                this.setState({
-                    employees: employeeCollection.data._embedded.employees,
-                    links: employeeCollection.data._links
-                });
+        axios.get(navUri).then(employeeCollection => {
+            this.setState({
+                employees: employeeCollection.data._embedded.employees,
+                links: employeeCollection.data._links
             });
+        });
     }
 
     // DOM 에 React 가 렌더링된 후 실행할 함수
