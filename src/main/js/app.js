@@ -6,12 +6,14 @@ const ReactDOM = require('react-dom')
 const axios = require('axios')
 
 import EmployeeList from './employee-list'
+import CreateDialogue from './create-dialogue'
 
 // 리액트 컴포넌트로 사용할 App 컴포넌트에 대한 선언
 class App extends React.Component {
     constructor(props) {
         super(props);
         this.state = {employees: []};
+        this.onCreate = this.onCreate.bind(this)
     }
 
     // 파트 1에서 만들었던 전체 정보를 가져오는 요청
@@ -42,6 +44,15 @@ class App extends React.Component {
             });
     }
 
+    onCreate(newEmployee) {
+        axios.get('/api/employees')
+            .then(employeeCollection => {
+                axios.post(employeeCollection.data._links.self.href, newEmployee, {
+                    headers: {'Content-Type': 'application/json'}
+                });
+            });
+    }
+
     // DOM 에 React 가 렌더링된 후 실행할 함수
     componentDidMount() {
         this.loadFromServer(this.state.pageSize);
@@ -50,7 +61,12 @@ class App extends React.Component {
     // 화면에 컴포넌트를 그리도록하는 API - 프레임워크 레벨에서 콜된다.
     render () {
         return (
-            <EmployeeList employees={this.state.employees}/>
+            <div>
+                <EmployeeList employees={this.state.employees}/>
+                <CreateDialogue
+                    attributes={this.state.attributes}
+                    onCreate={this.onCreate}/>
+            </div>
         )
     }
 }
