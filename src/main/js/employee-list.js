@@ -1,9 +1,11 @@
 const React = require('react');
-const ReactDOM = require('react-dom')
 
 export default class EmployeeList extends React.Component {
     constructor(props) {
         super(props);
+
+        this.pageSizeInputRef = React.createRef();
+
         this.handleNavFirst = this.handleNavFirst.bind(this);
         this.handleNavPrev = this.handleNavPrev.bind(this);
         this.handleNavNext = this.handleNavNext.bind(this);
@@ -30,11 +32,11 @@ export default class EmployeeList extends React.Component {
 
     handleInput(e) {
         e.preventDefault();
-        const pageSize = ReactDOM.findDOMNode(this.refs.pageSize).value;
+        const pageSize = this.pageSizeInputRef.current.value;
         if(/^[0-9]+$/.test(pageSize)) {
             this.props.updatePageSize(pageSize);
         } else {
-            ReactDOM.findDOMNode(this.refs.pageSize).value = pageSize.substring(0, pageSize.length - 1);
+            this.pageSizeInputRef.current.value = pageSize.substring(0, pageSize.length - 1);
         }
     }
 
@@ -62,7 +64,7 @@ export default class EmployeeList extends React.Component {
 
         return (
             <div>
-                <input ref={'pageSize'} defaultValue={this.props.pageSize} onInput={this.handleInput}/>
+                <input ref={this.pageSizeInputRef} defaultValue={this.props.pageSize} onInput={this.handleInput}/>
                 <table>
                     <tbody>
                     <tr>
