@@ -21,6 +21,7 @@ class App extends React.Component {
         this.onCreate = this.onCreate.bind(this);
         this.onNavigate = this.onNavigate.bind(this);
         this.onDelete = this.onDelete.bind(this);
+        this.onUpdate = this.onUpdate.bind(this);
         this.updatePageSize = this.updatePageSize.bind(this);
     }
 
@@ -42,9 +43,7 @@ class App extends React.Component {
         });
 
         const employees = await Promise.all(employeeCollection.data._embedded.employees.map(employee =>
-            axios.get(employee._links.self.href).then(response =>
-                response.data
-            )
+            axios.get(employee._links.self.href)
         ));
 
         this.setState({
@@ -73,10 +72,23 @@ class App extends React.Component {
         });
     }
 
-    onDelete(employee) {
-        axios.delete(employee._links.self.href).then(() => {
-            this.loadFromServer(this.state.pageSize);
+    async onUpdate(employee, updatedEmployee) {
+        await axios.put(employee.data._links.self.href, updatedEmployee, {
+            headers: {
+                'Content-Type': 'application/json',
+                'If-Match': employee.headers['etag']
+            }
+        }).catch(reason => {
+            alert(reason);
         });
+        this.loadFromServer(this.state.pageSize);
+    }
+
+    async onDelete(employee) {
+        await axios.delete(employee._links.self.href).catch(reason => {
+            alert(reason);
+        });
+        this.loadFromServer(this.state.pageSize);
     }
 
     updatePageSize(pageSize) {
@@ -87,9 +99,13 @@ class App extends React.Component {
 
     onNavigate(navUri) {
         axios.get(navUri).then(employeeCollection => {
-            this.setState({
-                employees: employeeCollection.data._embedded.employees,
-                links: employeeCollection.data._links
+            Promise.all(employeeCollection.data._embedded.employees.map(employee =>
+                axios.get(employee._links.self.href)
+            )).then(employees => {
+                this.setState({
+                    employees: employees,
+                    links: employeeCollection.data._links
+                });
             });
         });
     }
@@ -106,6 +122,8 @@ class App extends React.Component {
                 <EmployeeList
                     links={this.state.links}
                     employees={this.state.employees}
+                    attributes={this.state.attributes}
+                    onUpdate={this.onUpdate}
                     onNavigate={this.onNavigate}
                     onDelete={this.onDelete}
                     updatePageSize={this.updatePageSize}/>

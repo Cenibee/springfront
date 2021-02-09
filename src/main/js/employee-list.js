@@ -1,3 +1,5 @@
+import UpdateDialog from "./update-dialog";
+
 const React = require('react');
 
 export default class EmployeeList extends React.Component {
@@ -43,8 +45,10 @@ export default class EmployeeList extends React.Component {
     render() {
         const employees = this.props.employees.map(employee =>
             <Employee
-                key={employee._links.self.href}
+                key={employee.data._links.self.href}
                 employee={employee}
+                attributes={this.props.attributes}
+                onUpdate={this.props.onUpdate}
                 onDelete={this.props.onDelete}/>
         );
 
@@ -71,6 +75,7 @@ export default class EmployeeList extends React.Component {
                         <th>First Name</th>
                         <th>Last Name</th>
                         <th>Description</th>
+                        <th>Update</th>
                         <th>Delete</th>
                     </tr>
                     {employees}
@@ -91,15 +96,19 @@ class Employee extends React.Component {
     }
 
     handleDelete() {
-        this.props.onDelete(this.props.employee);
+        this.props.onDelete(this.props.employee.data);
     }
 
     render() {
         return (
             <tr>
-                <td>{this.props.employee.firstName}</td>
-                <td>{this.props.employee.lastName}</td>
-                <td>{this.props.employee.description}</td>
+                <td>{this.props.employee.data.firstName}</td>
+                <td>{this.props.employee.data.lastName}</td>
+                <td>{this.props.employee.data.description}</td>
+                <td><UpdateDialog
+                    employee={this.props.employee}
+                    attributes={this.props.attributes}
+                    onUpdate={this.props.onUpdate}/></td>
                 <td><button onClick={this.handleDelete}>Delete</button></td>
             </tr>
         )
