@@ -29,17 +29,12 @@ class App extends React.Component {
         this.refreshCurrentPage = this.refreshCurrentPage.bind(this);
     }
 
-    // 파트 1에서 만들었던 전체 정보를 가져오는 요청
-    // loadFromServerAtOnce() {
-    //     axios.get('/api/employees')
-    //         .then(response => {
-    //             this.setState({employees: response.data._embedded.employees});
-    //         });
-    // }
-
-    async loadFromServer(pageSize) {
+    async loadFromServer(pageSize, page=0) {
         const employeeCollection = await axios.get('/api/employees', {
-            params: {'size': pageSize}
+            params: {
+                size: pageSize,
+                page: page
+            }
         });
 
         const schema = await axios.get(employeeCollection.data._links.profile.href, {
@@ -54,6 +49,7 @@ class App extends React.Component {
             employees: employees,
             pageSize: pageSize,
             links: employeeCollection.data._links,
+            page: employeeCollection.data.page,
             attributes: Object.keys(schema.data.properties)
         });
     }
@@ -63,16 +59,6 @@ class App extends React.Component {
 
         await axios.post(employeeCollection.data._links.self.href, newEmployee, {
             headers: {'Content-Type': 'application/json'}
-        });
-
-        axios.get('/api/employees', {
-            params: {'size': this.state.pageSize}
-        }).then(response => {
-            if(typeof response.data._links.last !== 'undefined') {
-                this.onNavigate(response.data._links.last.href);
-            } else {
-                this.onNavigate(response.data._links.self.href);
-            }
         });
     }
 
@@ -85,14 +71,12 @@ class App extends React.Component {
         }).catch(reason => {
             alert(reason);
         });
-        this.loadFromServer(this.state.pageSize);
     }
 
     async onDelete(employee) {
         await axios.delete(employee._links.self.href).catch(reason => {
             alert(reason);
         });
-        this.loadFromServer(this.state.pageSize);
     }
 
     updatePageSize(pageSize) {
@@ -108,7 +92,8 @@ class App extends React.Component {
             )).then(employees => {
                 this.setState({
                     employees: employees,
-                    links: employeeCollection.data._links
+                    links: employeeCollection.data._links,
+                    page: employeeCollection.data.page
                 });
             });
         });
@@ -127,7 +112,7 @@ class App extends React.Component {
     }
 
     refreshCurrentPage() {
-        this.loadFromServer(this.state.pageSize);
+        this.loadFromServer(this.state.pageSize, this.state.page.number);
     }
 
     // DOM 에 React 가 렌더링된 후 실행할 함수
