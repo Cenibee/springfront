@@ -9,6 +9,12 @@ module.exports = {
         path: __dirname,
         filename: "./src/main/resources/static/built/bundle.js"
     },
+    // for ignore stomp-js dependency - net
+    resolve: {
+        fallback: {
+            net: false
+        }
+    },
     module: {
         rules: [
             {
