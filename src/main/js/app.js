@@ -5,6 +5,8 @@ const ReactDOM = require('react-dom')
 
 const axios = require('axios')
 
+const stompClient = require('./websocket-listener')
+
 import EmployeeList from './employee-list'
 import CreateDialogue from './create-dialogue'
 import 'regenerator-runtime/runtime'
@@ -23,6 +25,8 @@ class App extends React.Component {
         this.onDelete = this.onDelete.bind(this);
         this.onUpdate = this.onUpdate.bind(this);
         this.updatePageSize = this.updatePageSize.bind(this);
+        this.refreshAndGoToLastPage = this.refreshAndGoToLastPage.bind(this);
+        this.refreshCurrentPage = this.refreshCurrentPage.bind(this);
     }
 
     // 파트 1에서 만들었던 전체 정보를 가져오는 요청
@@ -110,9 +114,30 @@ class App extends React.Component {
         });
     }
 
+    refreshAndGoToLastPage() {
+        axios.get('/api/employees', {
+            params: {'size': this.state.pageSize}
+        }).then(response => {
+            if(typeof response.data._links.last !== 'undefined') {
+                this.onNavigate(response.data._links.last.href);
+            } else {
+                this.onNavigate(response.data._links.self.href);
+            }
+        });
+    }
+
+    refreshCurrentPage() {
+        this.loadFromServer(this.state.pageSize);
+    }
+
     // DOM 에 React 가 렌더링된 후 실행할 함수
     componentDidMount() {
         this.loadFromServer(this.state.pageSize);
+        stompClient.register([
+            {route: '/topic/newEmployee', callback: this.refreshAndGoToLastPage},
+            {route: '/topic/updateEmployee', callback: this.refreshCurrentPage},
+            {route: '/topic/deleteEmployee', callback: this.refreshCurrentPage}
+        ]);
     }
 
     // 화면에 컴포넌트를 그리도록하는 API - 프레임워크 레벨에서 콜된다.
