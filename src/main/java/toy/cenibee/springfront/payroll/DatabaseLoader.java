@@ -2,6 +2,9 @@ package toy.cenibee.springfront.payroll;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import toy.cenibee.springfront.payroll.manager.Manager;
 import toy.cenibee.springfront.payroll.manager.ManagerRepository;
@@ -25,7 +28,13 @@ public class DatabaseLoader implements CommandLineRunner {
     // 4. run() 메서드는 커맨드 라인 인자들과 함께 실행되어 데이터를 로드한다.
     @Override
     public void run(String... args) throws Exception {
-        Manager admin = this.managerRepository.save(new Manager("admin", "0000"));
+        Manager admin = this.managerRepository.save(new Manager("admin", "0000", "ROLE_MANAGER"));
+
+        // 여기서 생성된
+        SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken("admin", "doesn't matter",
+                        AuthorityUtils.createAuthorityList("ROLE_MANAGER"))
+        );
 
         this.repository.save(new Employee("Frodo", "Baggins", "ring bearer", admin));
         this.repository.save(new Employee("Bilbo", "Baggins", "burglar", admin));
@@ -33,5 +42,7 @@ public class DatabaseLoader implements CommandLineRunner {
         this.repository.save(new Employee("Samwise", "Gamgee", "gardener", admin));
         this.repository.save(new Employee("Meriadoc", "Brandybuck", "pony rider", admin));
         this.repository.save(new Employee("Peregrin", "Took", "pipe smoker", admin));
+
+        SecurityContextHolder.clearContext();
     }
 }
