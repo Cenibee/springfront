@@ -14,34 +14,42 @@ import toy.cenibee.springfront.payroll.manager.ManagerRepository;
 // 2. CmmandLineRunner 를 구현함으로써 모든 빈들이 생성/등록된 후에 동작이 실행된다.
 public class DatabaseLoader implements CommandLineRunner {
 
-    private final EmployeeRepository repository;
+    private final EmployeeRepository employees;
 
-    private final ManagerRepository managerRepository;
+    private final ManagerRepository managers;
 
     // 3. 생성자를 이용한 의존성 주입으로 EmployeeRepository 가 주입된다.
     @Autowired
-    public DatabaseLoader(EmployeeRepository repository, ManagerRepository managerRepository) {
-        this.repository = repository;
-        this.managerRepository = managerRepository;
+    public DatabaseLoader(EmployeeRepository employees, ManagerRepository managers) {
+        this.employees = employees;
+        this.managers = managers;
     }
 
     // 4. run() 메서드는 커맨드 라인 인자들과 함께 실행되어 데이터를 로드한다.
     @Override
     public void run(String... args) throws Exception {
-        Manager admin = this.managerRepository.save(new Manager("admin", "0000", "ROLE_MANAGER"));
 
-        // 여기서 생성된
+        Manager greg = this.managers.save(new Manager("greg", "greg", "ROLE_MANAGER"));
+
+        Manager oliver = this.managers.save(new Manager("oliver", "oliver", "ROLE_MANAGER"));
+
         SecurityContextHolder.getContext().setAuthentication(
-                new UsernamePasswordAuthenticationToken("admin", "doesn't matter",
+                new UsernamePasswordAuthenticationToken("greg", "doesn't matter",
                         AuthorityUtils.createAuthorityList("ROLE_MANAGER"))
         );
 
-        this.repository.save(new Employee("Frodo", "Baggins", "ring bearer", admin));
-        this.repository.save(new Employee("Bilbo", "Baggins", "burglar", admin));
-        this.repository.save(new Employee("Gandalf", "the Grey", "wizard", admin));
-        this.repository.save(new Employee("Samwise", "Gamgee", "gardener", admin));
-        this.repository.save(new Employee("Meriadoc", "Brandybuck", "pony rider", admin));
-        this.repository.save(new Employee("Peregrin", "Took", "pipe smoker", admin));
+        this.employees.save(new Employee("Frodo", "Baggins", "ring bearer", greg));
+        this.employees.save(new Employee("Bilbo", "Baggins", "burglar", greg));
+        this.employees.save(new Employee("Gandalf", "the Grey", "wizard", greg));
+
+        SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken("oliver", "doesn't matter",
+                        AuthorityUtils.createAuthorityList("ROLE_MANAGER"))
+        );
+
+        this.employees.save(new Employee("Samwise", "Gamgee", "gardener", oliver));
+        this.employees.save(new Employee("Meriadoc", "Brandybuck", "pony rider", oliver));
+        this.employees.save(new Employee("Peregrin", "Took", "pipe smoker", oliver));
 
         SecurityContextHolder.clearContext();
     }
