@@ -73,13 +73,18 @@ class App extends React.Component {
     }
 
     async onUpdate(employee, updatedEmployee) {
+        if(employee.data.manager.name !== this.props.loggedInManager) {
+            alert("You are not authorized to update");
+            return;
+        }
+
         await axios.put(employee.data._links.self.href, updatedEmployee, {
             headers: {
                 'Content-Type': 'application/json',
                 'If-Match': employee.headers['etag']
             }
         }).catch(reason => {
-            alert(reason);
+            alert('ACCESS DENIED: You are not authorized to update ' + reason);
         });
     }
 
