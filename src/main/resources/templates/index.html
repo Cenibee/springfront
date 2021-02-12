@@ -6,10 +6,13 @@
     <link rel="stylesheet" href="/main.css">
 </head>
 <body>
-    <!-- ReactJS를 직접 렌더링할 div -->
+    <div>
+        Hello, <span id="managername" th:text="${#authentication.name}">user</span>
+        <form th:action="@{/logout}" method="post">
+            <input type="submit" value="Log Out"/>
+        </form>
+    </div>
     <div id="react"></div>
-
-    <!-- 이거에 대해서는 이제 나오니까 기다려 -->
     <script src="built/bundle.js"></script>
 </body>
 </html>

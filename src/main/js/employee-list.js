@@ -47,6 +47,7 @@ export default class EmployeeList extends React.Component {
             <Employee
                 key={employee.data._links.self.href}
                 employee={employee}
+                loggedInManager={this.props.loggedInManager}
                 attributes={this.props.attributes}
                 onUpdate={this.props.onUpdate}
                 onDelete={this.props.onDelete}/>
@@ -75,6 +76,7 @@ export default class EmployeeList extends React.Component {
                         <th>First Name</th>
                         <th>Last Name</th>
                         <th>Description</th>
+                        <th>Manager</th>
                         <th>Update</th>
                         <th>Delete</th>
                     </tr>
@@ -105,9 +107,11 @@ class Employee extends React.Component {
                 <td>{this.props.employee.data.firstName}</td>
                 <td>{this.props.employee.data.lastName}</td>
                 <td>{this.props.employee.data.description}</td>
+                <td>{this.props.employee.data.manager.name}</td>
                 <td><UpdateDialog
                     employee={this.props.employee}
                     attributes={this.props.attributes}
+                    loggedInManager={this.props.loggedInManager}
                     onUpdate={this.props.onUpdate}/></td>
                 <td><button onClick={this.handleDelete}>Delete</button></td>
             </tr>

@@ -45,6 +45,16 @@ class App extends React.Component {
             axios.get(employee._links.self.href)
         ));
 
+        Object.keys(schema.data.properties).forEach(function (property) {
+            if(schema.data.properties[property].hasOwnProperty('format') &&
+                    schema.data.properties[property].format === 'uri') {
+                delete schema.data.properties[property];
+            }
+            else if(schema.data.properties[property].hasOwnProperty('$ref')) {
+                delete schema.data.properties[property];
+            }
+        })
+
         this.setState({
             employees: employees,
             pageSize: pageSize,
@@ -133,6 +143,7 @@ class App extends React.Component {
                     links={this.state.links}
                     employees={this.state.employees}
                     attributes={this.state.attributes}
+                    loggedInManager={this.props.loggedInManager}
                     onUpdate={this.onUpdate}
                     onNavigate={this.onNavigate}
                     onDelete={this.onDelete}
@@ -146,6 +157,6 @@ class App extends React.Component {
 }
 
 ReactDOM.render(
-    <App />,
+    <App loggedInManager={document.getElementById('managername').innerHTML}/>,
     document.getElementById('react')
 )
