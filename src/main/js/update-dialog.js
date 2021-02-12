@@ -35,10 +35,10 @@ export default class UpdateDialog extends React.Component {
                 </p>
             )
         });
-        const dialogId = 'updateEmployee-' + this.props.employee.data._links.self.href;
+        const dialogId = 'updateEmployee-' + this.props.employee.data['_links'].self.href;
 
         return (
-            <div key={this.props.employee.data._links.self.href}>
+            <div key={this.props.employee.data['_links'].self.href}>
                 <a href={'#' + dialogId}>Update</a>
                 <div id={dialogId} className={'modalDialog'}>
                     <a href={'#'} title={'Close'} className={'close'}>X</a>

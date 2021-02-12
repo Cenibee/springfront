@@ -37,12 +37,12 @@ class App extends React.Component {
             }
         });
 
-        const schema = await axios.get(employeeCollection.data._links.profile.href, {
+        const schema = await axios.get(employeeCollection.data['_links'].profile.href, {
             headers:{'Accept': 'application/schema+json'}
         });
 
-        const employees = await Promise.all(employeeCollection.data._embedded.employees.map(employee =>
-            axios.get(employee._links.self.href)
+        const employees = await Promise.all(employeeCollection.data['_embedded'].employees.map(employee =>
+            axios.get(employee['_links'].self.href)
         ));
 
         Object.keys(schema.data.properties).forEach(function (property) {
@@ -58,7 +58,7 @@ class App extends React.Component {
         this.setState({
             employees: employees,
             pageSize: pageSize,
-            links: employeeCollection.data._links,
+            links: employeeCollection.data['_links'],
             page: employeeCollection.data.page,
             attributes: Object.keys(schema.data.properties)
         });
@@ -67,18 +67,18 @@ class App extends React.Component {
     async onCreate(newEmployee) {
         const employeeCollection = await axios.get('/api/employees');
 
-        await axios.post(employeeCollection.data._links.self.href, newEmployee, {
+        await axios.post(employeeCollection.data['_links'].self.href, newEmployee, {
             headers: {'Content-Type': 'application/json'}
         });
     }
 
     async onUpdate(employee, updatedEmployee) {
-        if(employee.data.manager.name !== this.props.loggedInManager) {
+        if(employee.data['manager'].name !== this.props.loggedInManager) {
             alert("You are not authorized to update");
             return;
         }
 
-        await axios.put(employee.data._links.self.href, updatedEmployee, {
+        await axios.put(employee.data['_links'].self.href, updatedEmployee, {
             headers: {
                 'Content-Type': 'application/json',
                 'If-Match': employee.headers['etag']
@@ -89,7 +89,7 @@ class App extends React.Component {
     }
 
     async onDelete(employee) {
-        await axios.delete(employee._links.self.href).catch(reason => {
+        await axios.delete(employee['_links'].self.href).catch(reason => {
             alert(reason);
         });
     }
@@ -102,12 +102,12 @@ class App extends React.Component {
 
     onNavigate(navUri) {
         axios.get(navUri).then(employeeCollection => {
-            Promise.all(employeeCollection.data._embedded.employees.map(employee =>
-                axios.get(employee._links.self.href)
+            Promise.all(employeeCollection.data['_embedded'].employees.map(employee =>
+                axios.get(employee['_links'].self.href)
             )).then(employees => {
                 this.setState({
                     employees: employees,
-                    links: employeeCollection.data._links,
+                    links: employeeCollection.data['_links'],
                     page: employeeCollection.data.page
                 });
             });
@@ -118,10 +118,10 @@ class App extends React.Component {
         axios.get('/api/employees', {
             params: {'size': this.state.pageSize}
         }).then(response => {
-            if(typeof response.data._links.last !== 'undefined') {
-                this.onNavigate(response.data._links.last.href);
+            if(typeof response.data['_links'].last !== 'undefined') {
+                this.onNavigate(response.data['_links'].last.href);
             } else {
-                this.onNavigate(response.data._links.self.href);
+                this.onNavigate(response.data['_links'].self.href);
             }
         });
     }

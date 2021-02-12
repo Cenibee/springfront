@@ -45,7 +45,7 @@ export default class EmployeeList extends React.Component {
     render() {
         const employees = this.props.employees.map(employee =>
             <Employee
-                key={employee.data._links.self.href}
+                key={employee.data['_links'].self.href}
                 employee={employee}
                 loggedInManager={this.props.loggedInManager}
                 attributes={this.props.attributes}
@@ -104,10 +104,10 @@ class Employee extends React.Component {
     render() {
         return (
             <tr>
-                <td>{this.props.employee.data.firstName}</td>
-                <td>{this.props.employee.data.lastName}</td>
+                <td>{this.props.employee.data['firstName']}</td>
+                <td>{this.props.employee.data['lastName']}</td>
                 <td>{this.props.employee.data.description}</td>
-                <td>{this.props.employee.data.manager.name}</td>
+                <td>{this.props.employee.data['manager'].name}</td>
                 <td><UpdateDialog
                     employee={this.props.employee}
                     attributes={this.props.attributes}
