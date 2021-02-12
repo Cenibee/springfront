@@ -1,4 +1,4 @@
-package toy.cenibee.springfront.payroll;
+package toy.cenibee.springfront.payroll.system;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -6,6 +6,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+import toy.cenibee.springfront.payroll.employee.Employee;
+import toy.cenibee.springfront.payroll.employee.EmployeeRepository;
 import toy.cenibee.springfront.payroll.manager.Manager;
 import toy.cenibee.springfront.payroll.manager.ManagerRepository;
 

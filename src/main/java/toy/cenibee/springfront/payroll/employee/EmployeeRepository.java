@@ -1,4 +1,4 @@
-package toy.cenibee.springfront.payroll;
+package toy.cenibee.springfront.payroll.employee;
 
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;

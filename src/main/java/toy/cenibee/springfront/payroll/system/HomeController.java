@@ -1,4 +1,4 @@
-package toy.cenibee.springfront.payroll;
+package toy.cenibee.springfront.payroll.system;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;

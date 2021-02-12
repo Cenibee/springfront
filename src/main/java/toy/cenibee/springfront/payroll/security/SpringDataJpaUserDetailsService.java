@@ -1,4 +1,4 @@
-package toy.cenibee.springfront.payroll;
+package toy.cenibee.springfront.payroll.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.AuthorityUtils;

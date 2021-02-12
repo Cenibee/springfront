@@ -1,4 +1,4 @@
-package toy.cenibee.springfront.payroll;
+package toy.cenibee.springfront.payroll.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -8,6 +8,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import toy.cenibee.springfront.payroll.manager.Manager;
+import toy.cenibee.springfront.payroll.security.SpringDataJpaUserDetailsService;
 
 @Configuration
 @EnableWebSecurity

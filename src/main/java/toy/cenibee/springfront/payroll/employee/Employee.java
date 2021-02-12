@@ -1,4 +1,4 @@
-package toy.cenibee.springfront.payroll;
+package toy.cenibee.springfront.payroll.employee;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import toy.cenibee.springfront.payroll.manager.Manager;
